@@ -1,1 +1,15 @@
-
+[
+  {
+    "id": "pbj-hps-1",
+    "question": "Apa yang dimaksud dengan HPS?",
+    "options": [
+      "Harga Penawaran Supplier",
+      "Harga Perkiraan Sendiri",
+      "Harga Pasar Standar",
+      "Harga Pemerintah Setempat"
+    ],
+    "correctIndex": 1,
+    "difficulty": "mudah",
+    "explanation": "HPS adalah perkiraan harga..."
+  }
+]
