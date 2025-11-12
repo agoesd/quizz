@@ -1,1 +1,59 @@
 
+{
+  "PBJ": {
+    "name": "Pengadaan Barang dan Jasa",
+    "icon": "📋",
+    "description": "Materi tentang pengadaan barang dan jasa pemerintah",
+    "subtopics": {
+      "HPS": {
+        "name": "Harga Perkiraan Sendiri",
+        "file": "PBJ/HPS/questions.json",
+        "totalQuestions": 10
+      },
+      "Kontrak": {
+        "name": "Kontrak Pengadaan",
+        "file": "PBJ/Kontrak/questions.json",
+        "totalQuestions": 8
+      },
+      "Lelang": {
+        "name": "Proses Lelang",
+        "file": "PBJ/Lelang/questions.json",
+        "totalQuestions": 12
+      }
+    }
+  },
+  "Hukum": {
+    "name": "Hukum dan Peraturan",
+    "icon": "⚖️",
+    "description": "Materi hukum pidana dan perdata",
+    "subtopics": {
+      "Pidana": {
+        "name": "Hukum Pidana",
+        "file": "Hukum/Pidana/questions.json",
+        "totalQuestions": 15
+      },
+      "Perdata": {
+        "name": "Hukum Perdata",
+        "file": "Hukum/Perdata/questions.json",
+        "totalQuestions": 15
+      }
+    }
+  },
+  "Akuntansi": {
+    "name": "Akuntansi",
+    "icon": "💰",
+    "description": "Materi akuntansi dasar dan lanjutan",
+    "subtopics": {
+      "Dasar": {
+        "name": "Akuntansi Dasar",
+        "file": "Akuntansi/Dasar/questions.json",
+        "totalQuestions": 20
+      },
+      "Keuangan": {
+        "name": "Akuntansi Keuangan",
+        "file": "Akuntansi/Keuangan/questions.json",
+        "totalQuestions": 18
+      }
+    }
+  }
+}
