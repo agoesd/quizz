@@ -38,7 +38,6 @@ const AdminPanel = () => {
     const mudah = questions.filter(q => q.difficulty === 'mudah').length;
     const sedang = questions.filter(q => q.difficulty === 'sedang').length;
     const sulit = questions.filter(q => q.difficulty === 'sulit').length;
-    
     setStats({ total: questions.length, mudah, sedang, sulit });
   }, [questions]);
 
@@ -70,7 +69,6 @@ const AdminPanel = () => {
     }
 
     const id = currentQuestion.id || generateId(currentQuestion.topic, currentQuestion.subtopic);
-    
     const newQuestion = {
       ...currentQuestion,
       id,
@@ -132,23 +130,11 @@ const AdminPanel = () => {
 
   const exportBySubtopic = () => {
     const grouped = {};
-    
     questions.forEach(q => {
       if (!grouped[q.topic]) grouped[q.topic] = {};
       if (!grouped[q.topic][q.subtopic]) grouped[q.topic][q.subtopic] = [];
       grouped[q.topic][q.subtopic].push(q);
     });
-
-    let structure = "Struktur File yang akan dibuat:\n\n";
-    for (const [topic, subtopics] of Object.entries(grouped)) {
-      structure += `📁 ${topic}/\n`;
-      for (const [subtopic, qs] of Object.entries(subtopics)) {
-        structure += `  📁 ${subtopic}/\n`;
-        structure += `    📄 questions.json (${qs.length} soal)\n`;
-      }
-    }
-
-    alert(structure + "\n\nFile akan di-download satu per satu.");
 
     for (const [topic, subtopics] of Object.entries(grouped)) {
       for (const [subtopic, qs] of Object.entries(subtopics)) {
@@ -175,7 +161,7 @@ const AdminPanel = () => {
             setQuestions(imported);
             alert(`✅ Berhasil import ${imported.length} soal!`);
           } else {
-            alert('❌ Format JSON tidak valid! Harus berupa array.');
+            alert('❌ Format JSON tidak valid!');
           }
         } catch (err) {
           alert('❌ Error: File JSON tidak valid!');
@@ -197,17 +183,14 @@ const AdminPanel = () => {
     const newBackups = [backup, ...backups].slice(0, 10);
     setBackups(newBackups);
     localStorage.setItem('quiz_backups', JSON.stringify(newBackups));
-    
-    alert(`✅ Backup berhasil dibuat! Total: ${questions.length} soal`);
+    alert(`✅ Backup berhasil dibuat!`);
   };
 
   const restoreBackup = (backupId) => {
     const backup = backups.find(b => b.id === backupId);
-    if (backup) {
-      if (confirm(`Restore backup dari ${new Date(backup.timestamp).toLocaleString()}?\n\nIni akan mengganti ${questions.length} soal saat ini dengan ${backup.totalQuestions} soal dari backup.`)) {
-        setQuestions(backup.questions);
-        alert('✅ Backup berhasil di-restore!');
-      }
+    if (backup && confirm(`Restore backup dari ${new Date(backup.timestamp).toLocaleString()}?`)) {
+      setQuestions(backup.questions);
+      alert('✅ Backup berhasil di-restore!');
     }
   };
 
@@ -220,12 +203,11 @@ const AdminPanel = () => {
   };
 
   const clearAllData = () => {
-    if (confirm('⚠️ PERINGATAN!\n\nIni akan menghapus SEMUA soal yang ada.\nPastikan Anda sudah membuat backup!\n\nLanjutkan?')) {
-      if (confirm('Apakah Anda YAKIN? Data tidak bisa dikembalikan!')) {
+    if (confirm('⚠️ PERINGATAN! Ini akan menghapus SEMUA soal. Lanjutkan?')) {
+      if (confirm('Apakah Anda YAKIN?')) {
         setQuestions([]);
         resetForm();
         setEditIndex(-1);
-        alert('✅ Semua data telah dihapus.');
       }
     }
   };
@@ -233,7 +215,6 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -246,7 +227,6 @@ const AdminPanel = () => {
             </div>
           </div>
 
-          {/* Tools Section - BARU! */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
             <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
               🛠️ Tools Tambahan
@@ -278,7 +258,6 @@ const AdminPanel = () => {
             </p>
           </div>
 
-          {/* Statistics */}
           <div className="grid grid-cols-4 gap-4 mb-4">
             <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg">
               <div className="text-2xl font-bold text-indigo-600">{stats.total}</div>
@@ -298,7 +277,6 @@ const AdminPanel = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-wrap gap-2">
             <label className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600 flex items-center gap-2 text-sm font-medium">
               <Upload className="w-4 h-4" />
@@ -351,7 +329,6 @@ const AdminPanel = () => {
           </div>
         </div>
 
-        {/* Backup Section */}
         {backups.length > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
@@ -366,10 +343,7 @@ const AdminPanel = () => {
                       {new Date(backup.timestamp).toLocaleString('id-ID')}
                     </div>
                     <div className="text-sm text-gray-600">
-                      {backup.totalQuestions} soal • 
-                      Mudah: {backup.stats.mudah} • 
-                      Sedang: {backup.stats.sedang} • 
-                      Sulit: {backup.stats.sulit}
+                      {backup.totalQuestions} soal
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -393,16 +367,13 @@ const AdminPanel = () => {
           </div>
         )}
 
-        {/* Main Content */}
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Form Input - SAMA SEPERTI SEBELUMNYA */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-700">
                 {editIndex >= 0 ? '✏️ Edit Soal' : '➕ Tambah Soal Baru'}
               </h2>
 
-              {/* Topik & Subtopik */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Topik *</label>
@@ -433,7 +404,6 @@ const AdminPanel = () => {
                 </div>
               </div>
 
-              {/* ID Soal */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   ID Soal <span className="text-gray-500 text-xs">(otomatis jika kosong)</span>
@@ -447,7 +417,6 @@ const AdminPanel = () => {
                 />
               </div>
 
-              {/* Pertanyaan */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pertanyaan *</label>
                 <textarea
@@ -459,7 +428,6 @@ const AdminPanel = () => {
                 />
               </div>
 
-              {/* Pilihan Jawaban */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Pilihan Jawaban *</label>
                 {currentQuestion.options.map((option, index) => (
@@ -486,7 +454,6 @@ const AdminPanel = () => {
                 <p className="text-xs text-gray-500 mt-1">💡 Klik radio button untuk menandai jawaban benar</p>
               </div>
 
-              {/* Tingkat Kesulitan */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tingkat Kesulitan *</label>
                 <div className="grid grid-cols-3 gap-3">
@@ -509,7 +476,6 @@ const AdminPanel = () => {
                 </div>
               </div>
 
-              {/* Pembahasan */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pembahasan *</label>
                 <textarea
@@ -517,11 +483,10 @@ const AdminPanel = () => {
                   onChange={(e) => handleInputChange('explanation', e.target.value)}
                   rows="4"
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Jelaskan jawaban yang benar dan mengapa pilihan lain salah..."
+                  placeholder="Jelaskan jawaban yang benar..."
                 />
               </div>
 
-              {/* Tags */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Tags <span className="text-gray-500 text-xs">(pisahkan dengan koma)</span>
@@ -535,7 +500,6 @@ const AdminPanel = () => {
                 />
               </div>
 
-              {/* Referensi */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Referensi <span className="text-gray-500 text-xs">(opsional)</span>
@@ -549,7 +513,6 @@ const AdminPanel = () => {
                 />
               </div>
 
-              {/* Tombol Aksi */}
               <div className="flex gap-3 pt-4 border-t">
                 <button
                   onClick={addQuestion}
@@ -572,7 +535,6 @@ const AdminPanel = () => {
               </div>
             </div>
 
-            {/* List Soal */}
             <div>
               <h2 className="text-xl font-semibold text-gray-700 mb-4 flex items-center justify-between">
                 <span>📚 Daftar Soal ({questions.length})</span>
@@ -654,7 +616,6 @@ const AdminPanel = () => {
           </div>
         </div>
 
-        {/* Preview JSON */}
         {showPreview && questions.length > 0 && (
           <div className="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-sm overflow-x-auto mt-6 shadow-lg">
             <div className="flex justify-between items-center mb-4">
