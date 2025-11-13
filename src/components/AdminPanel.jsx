@@ -638,4 +638,43 @@ const AdminPanel = () => {
                       </div>
                       
                       {q.tags && q.tags.length > 0 && (
-                        <div className="flex gap-
+                        <div className="flex gap-1 mt-2 flex-wrap">
+                          {q.tags.map((tag, i) => (
+                            <span key={i} className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Preview JSON */}
+        {showPreview && questions.length > 0 && (
+          <div className="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-sm overflow-x-auto mt-6 shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white font-bold">JSON Preview</h3>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(JSON.stringify(questions, null, 2));
+                  alert('✅ JSON copied to clipboard!');
+                }}
+                className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+              >
+                Copy
+              </button>
+            </div>
+            <pre className="max-h-96 overflow-y-auto">{JSON.stringify(questions, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default AdminPanel;
