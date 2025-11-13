@@ -318,6 +318,32 @@ const QuizApp = () => {
     }
   };
 
+// Tambahkan function baru ini
+const saveQuizHistory = () => {
+  const history = {
+    topic: selectedTopic,
+    subtopic: selectedSubtopics.join(', '),
+    score: score,
+    total: questions.length,
+    date: new Date().toLocaleString('id-ID'),
+    difficulty: selectedDifficulty.join(', '),
+    timestamp: Date.now()
+  };
+
+  // Get existing history
+  const existingHistory = localStorage.getItem(`quiz_history_${user.username}`);
+  const historyArray = existingHistory ? JSON.parse(existingHistory) : [];
+  
+  // Add new history
+  historyArray.unshift(history); // Add to beginning
+  
+  // Keep only last 20 records
+  const limitedHistory = historyArray.slice(0, 20);
+  
+  // Save to localStorage
+  localStorage.setItem(`quiz_history_${user.username}`, JSON.stringify(limitedHistory));
+};
+  
   const resetQuiz = () => {
     setGameState('setup');
     setSelectedAnswer(null);
