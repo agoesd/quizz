@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Save, Trash2, Download, Upload, Eye, Database, RotateCcw, Archive } from 'lucide-react';
+import { Plus, Save, Trash2, Download, Upload, Eye, Database, RotateCcw, Archive, ExternalLink } from 'lucide-react';
 
 const AdminPanel = () => {
   const [topics, setTopics] = useState({
@@ -27,7 +27,6 @@ const AdminPanel = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [stats, setStats] = useState({ total: 0, mudah: 0, sedang: 0, sulit: 0 });
 
-  // Load backups dari localStorage
   useEffect(() => {
     const savedBackups = localStorage.getItem('quiz_backups');
     if (savedBackups) {
@@ -35,18 +34,12 @@ const AdminPanel = () => {
     }
   }, []);
 
-  // Update statistik
   useEffect(() => {
     const mudah = questions.filter(q => q.difficulty === 'mudah').length;
     const sedang = questions.filter(q => q.difficulty === 'sedang').length;
     const sulit = questions.filter(q => q.difficulty === 'sulit').length;
     
-    setStats({
-      total: questions.length,
-      mudah,
-      sedang,
-      sulit
-    });
+    setStats({ total: questions.length, mudah, sedang, sulit });
   }, [questions]);
 
   const generateId = (topic, subtopic) => {
@@ -138,20 +131,14 @@ const AdminPanel = () => {
   };
 
   const exportBySubtopic = () => {
-    // Group questions by topic and subtopic
     const grouped = {};
     
     questions.forEach(q => {
-      if (!grouped[q.topic]) {
-        grouped[q.topic] = {};
-      }
-      if (!grouped[q.topic][q.subtopic]) {
-        grouped[q.topic][q.subtopic] = [];
-      }
+      if (!grouped[q.topic]) grouped[q.topic] = {};
+      if (!grouped[q.topic][q.subtopic]) grouped[q.topic][q.subtopic] = [];
       grouped[q.topic][q.subtopic].push(q);
     });
 
-    // Create zip structure info
     let structure = "Struktur File yang akan dibuat:\n\n";
     for (const [topic, subtopics] of Object.entries(grouped)) {
       structure += `📁 ${topic}/\n`;
@@ -161,9 +148,8 @@ const AdminPanel = () => {
       }
     }
 
-    alert(structure + "\n\nSilakan export per subtopik secara manual, atau gunakan fitur export all untuk mendapatkan satu file JSON.");
+    alert(structure + "\n\nFile akan di-download satu per satu.");
 
-    // Export each subtopic
     for (const [topic, subtopics] of Object.entries(grouped)) {
       for (const [subtopic, qs] of Object.entries(subtopics)) {
         const dataStr = JSON.stringify(qs, null, 2);
@@ -208,7 +194,7 @@ const AdminPanel = () => {
       stats: stats
     };
 
-    const newBackups = [backup, ...backups].slice(0, 10); // Keep last 10 backups
+    const newBackups = [backup, ...backups].slice(0, 10);
     setBackups(newBackups);
     localStorage.setItem('quiz_backups', JSON.stringify(newBackups));
     
@@ -258,6 +244,38 @@ const AdminPanel = () => {
               <div className="text-3xl font-bold text-indigo-600">{stats.total}</div>
               <div className="text-sm text-gray-500">Total Soal</div>
             </div>
+          </div>
+
+          {/* Tools Section - BARU! */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+            <h3 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+              🛠️ Tools Tambahan
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="/tools/template-generator.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all flex items-center gap-2 text-sm font-medium"
+              >
+                <Download className="w-4 h-4" />
+                Download Template Excel
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <a
+                href="/tools/excel-converter.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all flex items-center gap-2 text-sm font-medium"
+              >
+                <Upload className="w-4 h-4" />
+                Excel to JSON Converter
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <p className="text-xs text-gray-600 mt-2">
+              💡 Gunakan tools ini untuk input soal dalam jumlah banyak via Excel
+            </p>
           </div>
 
           {/* Statistics */}
@@ -378,7 +396,7 @@ const AdminPanel = () => {
         {/* Main Content */}
         <div className="bg-white rounded-lg shadow-lg p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Form Input */}
+            {/* Form Input - SAMA SEPERTI SEBELUMNYA */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-700">
                 {editIndex >= 0 ? '✏️ Edit Soal' : '➕ Tambah Soal Baru'}
@@ -431,9 +449,7 @@ const AdminPanel = () => {
 
               {/* Pertanyaan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pertanyaan *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pertanyaan *</label>
                 <textarea
                   value={currentQuestion.question}
                   onChange={(e) => handleInputChange('question', e.target.value)}
@@ -445,9 +461,7 @@ const AdminPanel = () => {
 
               {/* Pilihan Jawaban */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Pilihan Jawaban *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Pilihan Jawaban *</label>
                 {currentQuestion.options.map((option, index) => (
                   <div key={index} className="flex items-center gap-2 mb-2">
                     <input
@@ -469,16 +483,12 @@ const AdminPanel = () => {
                     />
                   </div>
                 ))}
-                <p className="text-xs text-gray-500 mt-1">
-                  💡 Klik radio button untuk menandai jawaban benar
-                </p>
+                <p className="text-xs text-gray-500 mt-1">💡 Klik radio button untuk menandai jawaban benar</p>
               </div>
 
               {/* Tingkat Kesulitan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tingkat Kesulitan *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tingkat Kesulitan *</label>
                 <div className="grid grid-cols-3 gap-3">
                   {['mudah', 'sedang', 'sulit'].map((level) => (
                     <button
@@ -501,9 +511,7 @@ const AdminPanel = () => {
 
               {/* Pembahasan */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pembahasan *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pembahasan *</label>
                 <textarea
                   value={currentQuestion.explanation}
                   onChange={(e) => handleInputChange('explanation', e.target.value)}
@@ -630,43 +638,4 @@ const AdminPanel = () => {
                       </div>
                       
                       {q.tags && q.tags.length > 0 && (
-                        <div className="flex gap-1 mt-2 flex-wrap">
-                          {q.tags.map((tag, i) => (
-                            <span key={i} className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Preview JSON */}
-        {showPreview && questions.length > 0 && (
-          <div className="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-sm overflow-x-auto mt-6 shadow-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-white font-bold">JSON Preview</h3>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(JSON.stringify(questions, null, 2));
-                  alert('✅ JSON copied to clipboard!');
-                }}
-                className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
-              >
-                Copy
-              </button>
-            </div>
-            <pre className="max-h-96 overflow-y-auto">{JSON.stringify(questions, null, 2)}</pre>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default AdminPanel;
+                        <div className="flex gap-
