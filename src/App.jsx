@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Trophy, RotateCcw, BookOpen, Clock, Settings, Shuffle, Filter } from 'lucide-react';
 
+// Test Tailwind
+<div className="bg-red-500 text-white p-4">
+  Test Tailwind - Jika warna merah muncul, Tailwind works!
+</div>
+
 const QuizApp = () => {
   // Simulasi struktur folder dengan data quiz
   // Dalam implementasi real, ini bisa diload dari file JSON di folder public/quiz-data/
