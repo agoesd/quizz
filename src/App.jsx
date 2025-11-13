@@ -3,7 +3,7 @@ import { Home, BookOpen, Settings, BarChart } from 'lucide-react';
 import AuthSystem, { UserInfo, useAuth, ProtectedRoute } from './components/AuthSystem';
 import QuizApp from './components/QuizApp';
 import AdminPanel from './components/AdminPanel';
-
+ 
 const App = () => {
   const { user, loading, login, logout, isAdmin, isUser, isGuest } = useAuth();
   const [currentPage, setCurrentPage] = useState('home');
