@@ -5,6 +5,11 @@ import QuizApp from './components/QuizApp';
 import AdminPanel from './components/AdminPanel';
 
 const App = () => {
+  console.log('🔥 App.jsx loaded - NEW VERSION!');
+  const { user, loading, login, logout, isAdmin, isUser, isGuest } = useAuth();
+  // ... rest of code
+
+const App = () => {
   const { user, loading, login, logout, isAdmin, isUser, isGuest } = useAuth();
   const [currentPage, setCurrentPage] = useState('home');
 
