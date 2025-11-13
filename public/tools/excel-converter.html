@@ -1,1 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excel to JSON Converter - Quiz</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+    
+    .info-box {
+      background: #f0f7ff;
+      border-left: 4px solid #3b82f6;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+    }
+    
+    .info-box h3 {
+      color: #1e40af;
+      margin-bottom: 10px;
+    }
+    
+    .info-box ul {
+      margin-left: 20px;
+      color: #374151;
+      line-height: 1.8;
+    }
+    
+    .upload-area {
+      border: 3px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 30px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .upload-area:hover {
+      border-color: #667eea;
+      background: #f8fafc;
+    }
+    
+    .upload-area.dragover {
+      border-color: #667eea;
+      background: #ede9fe;
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .preview {
+      margin-top: 30px;
+    }
+    
+    .preview h3 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .output {
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre;
+      margin-top: 20px;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-mudah {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .badge-sedang {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .badge-sulit {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Excel to JSON Converter</h1>
+    <p class="subtitle">Convert file Excel soal quiz ke format JSON</p>
+    
+    <div class="info-box">
+      <h3>📋 Format Excel yang Diperlukan:</h3>
+      <ul>
+        <li><strong>Kolom A:</strong> ID Soal (contoh: pbj-hps-001)</li>
+        <li><strong>Kolom B:</strong> Pertanyaan</li>
+        <li><strong>Kolom C:</strong> Pilihan A</li>
+        <li><strong>Kolom D:</strong> Pilihan B</li>
+        <li><strong>Kolom E:</strong> Pilihan C</li>
+        <li><strong>Kolom F:</strong> Pilihan D</li>
+        <li><strong>Kolom G:</strong> Jawaban Benar (A/B/C/D atau 0/1/2/3)</li>
+        <li><strong>Kolom H:</strong> Tingkat Kesulitan (mudah/sedang/sulit)</li>
+        <li><strong>Kolom I:</strong> Pembahasan</li>
+        <li><strong>Kolom J:</strong> Tags (pisahkan dengan koma)</li>
+        <li><strong>Kolom K:</strong> Referensi (opsional)</li>
+      </ul>
+    </div>
+    
+    <div class="upload-area" id="uploadArea">
+      <div class="icon">📁</div>
+      <h3>Drag & Drop file Excel di sini</h3>
+      <p style="color: #6b7280; margin-top: 10px;">atau</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" />
+      <button class="btn" onclick="document.getElementById('fileInput').click()" style="margin-top: 15px;">
+        Pilih File Excel
+      </button>
+    </div>
+    
+    <div id="preview"></div>
+    <div id="output"></div>
+  </div>
 
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const previewDiv = document.getElementById('preview');
+    const outputDiv = document.getElementById('output');
+    
+    let jsonData = null;
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) processFile(file);
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) processFile(file);
+    });
+    
+    function processFile(file) {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+        
+        convertToJSON(rows);
+      };
+      
+      reader.readAsArrayBuffer(file);
+    }
+    
+    function convertToJSON(rows) {
+      const questions = [];
+      
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        
+        if (!row[0] || !row[1]) continue;
+        
+        let correctIndex;
+        const answer = String(row[6]).toUpperCase();
+        if (answer === 'A' || answer === '0') correctIndex = 0;
+        else if (answer === 'B' || answer === '1') correctIndex = 1;
+        else if (answer === 'C' || answer === '2') correctIndex = 2;
+        else if (answer === 'D' || answer === '3') correctIndex = 3;
+        else correctIndex = 0;
+        
+        const question = {
+          id: row[0],
+          question: row[1],
+          options: [
+            row[2] || '',
+            row[3] || '',
+            row[4] || '',
+            row[5] || ''
+          ],
+          correctIndex: correctIndex,
+          difficulty: (row[7] || 'mudah').toLowerCase(),
+          explanation: row[8] || '',
+          tags: row[9] ? row[9].split(',').map(t => t.trim()) : [],
+          references: row[10] || ''
+        };
+        
+        questions.push(question);
+      }
+      
+      jsonData = questions;
+      displayPreview(questions);
+      displayJSON(questions);
+    }
+    
+    function displayPreview(questions) {
+      let html = '<div class="preview"><h3>Preview Data (' + questions.length + ' soal)</h3>';
+      html += '<table>';
+      html += '<thead><tr><th>ID</th><th>Pertanyaan</th><th>Jawaban</th><th>Kesulitan</th></tr></thead>';
+      html += '<tbody>';
+      
+      questions.slice(0, 5).forEach(q => {
+        const difficulty = q.difficulty;
+        const badgeClass = 'badge-' + difficulty;
+        html += '<tr>';
+        html += '<td>' + q.id + '</td>';
+        html += '<td>' + q.question.substring(0, 50) + '...</td>';
+        html += '<td>' + q.options[q.correctIndex] + '</td>';
+        html += '<td><span class="badge ' + badgeClass + '">' + difficulty + '</span></td>';
+        html += '</tr>';
+      });
+      
+      html += '</tbody></table>';
+      
+      if (questions.length > 5) {
+        html += '<p style="color: #6b7280; font-style: italic;">Menampilkan 5 dari ' + questions.length + ' soal</p>';
+      }
+      
+      html += '</div>';
+      previewDiv.innerHTML = html;
+    }
+    
+    function displayJSON(questions) {
+      const jsonString = JSON.stringify(questions, null, 2);
+      
+      let html = '<div class="preview">';
+      html += '<h3>📄 Output JSON</h3>';
+      html += '<div class="btn-group">';
+      html += '<button class="btn" onclick="copyJSON()">📋 Copy JSON</button>';
+      html += '<button class="btn" onclick="downloadJSON()">💾 Download JSON</button>';
+      html += '</div>';
+      html += '<div class="output" id="jsonOutput">' + jsonString + '</div>';
+      html += '</div>';
+      
+      outputDiv.innerHTML = html;
+    }
+    
+    function copyJSON() {
+      const jsonString = JSON.stringify(jsonData, null, 2);
+      navigator.clipboard.writeText(jsonString).then(() => {
+        alert('✅ JSON berhasil dicopy ke clipboard!');
+      });
+    }
+    
+    function downloadJSON() {
+      const jsonString = JSON.stringify(jsonData, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'questions.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
