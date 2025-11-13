@@ -9,13 +9,13 @@ const USERS_DB = {
     role: 'admin',
     name: 'Administrator'
   },
-  user1: {
+  user: {
     username: 'user',
     password: 'user123',
     role: 'user',
     name: 'User Reguler'
   },
-  user2: {
+  peserta: {
     username: 'peserta',
     password: 'peserta123',
     role: 'user',
