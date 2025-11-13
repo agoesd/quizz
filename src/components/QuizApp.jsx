@@ -313,6 +313,7 @@ const QuizApp = () => {
       setSelectedAnswer(null);
       setShowExplanation(false);
     } else {
+      saveQuizHistory();
       setGameState('result');
     }
   };
